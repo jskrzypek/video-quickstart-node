@@ -60,6 +60,28 @@ $.getJSON('/token', function(data) {
     }
   };
 
+  document.getElementById('button-chrome').onclick = function () {
+    roomName = document.getElementById('room-name').value;
+    if (roomName) {
+      log("Joining room '" + roomName + "' using Chrome error workaround...");
+
+      var connectOptions = { name: roomName, logLevel: 'debug' };
+      if (previewTracks) {
+        connectOptions.tracks = previewTracks;
+      }
+
+      if (window.RTCPeerConnection && window.webkitRTCPeerConnection && !window.mozRTCPeerConnection) {
+        connectOptions.RTCPeerConnection = RTCPeerConnection;
+      }
+
+      Twilio.Video.connect(data.token, connectOptions).then(roomJoined, function(error) {
+        log('Could not connect to Twilio: ' + error.message);
+      });
+    } else {
+      alert('Please enter a room name.');
+    }
+  };
+
   // Bind button to leave room
   document.getElementById('button-leave').onclick = function () {
     log('Leaving room...');
